@@ -1,19 +1,87 @@
 from main import db
 
+'''
+for the following model classes, indexing is added only for
+    obvious cases. Add indexing as required
+
+Using team_user_map as a model is a peculiar case: we might
+    run into some weird errors and workarounds. Look at sqlalchemy's
+    doc and see, they "strongly recommend" we don't use models for
+    mapping many-to-many relationships
+    https://pythonhosted.org/Flask-SQLAlchemy/models.html#many-to-many-relationships
+'''
+
+shift_user_map = db.Table(
+        'shift_user_map',
+        db.Column('shift', db.Integer, db.ForeignKey('shift.id')),
+        db.Column('user', db.Integer, db.ForeignKey('user.id'))
+    )
+
+class Team(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    leader = db.Column(db.Integer, db.ForeignKey('user.id'))
+    name = db.Column(db.String(64))
+    org = db.Column(db.String(64))
+    desc = db.Column(db.String(200))
+    
+    team_member_mapping = db.relationship('Team_User_map', backref='team_bk', lazy='dynamic')
+    shifts = db.relationship('Shift', backref='team_bk', lazy='dynamic')
+    
+    def __repr__(self):
+        return "<Team %r>" % (self.name)
+    
+class Team_User_map(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    team = db.Column(db.Integer, db.ForeignKey('team.id'))
+    user = db.Column(db.Integer, db.ForeignKey('user.id'))
+    shift_type = db.Column(db.Integer, db.ForeignKey('shift_type.id'))
+    offset = db.Column(db.Integer)
+    
+    def __repr__(self):
+        return "<Team-User map %r to %r>" % (self.user, self.team)
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    nickname = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(64), index=True, unique=True)
-    posts = db.relationship('Post', backref='author', lazy='dynamic')
+    pwd_hash = db.Column(db.String(64))
+    name = db.Column(db.String(64))
+    
+    leader_of = db.relationship('Team', backref='leader_bk', lazy='dynamic')
+    team_mappings = db.relationship('Team_User_map', backref='user_bk', lazy='dynamic')
+    preferences = db.relationship('Preference', backref='user_bk', lazy='dynamic')
+    shifts = db.relationship('Shift', secondary=shift_user_map,
+                             backref=db.backref('users_bk', lazy='dynamic'))
     
     def __repr__(self):
-        return "<User %r>" % (self.nickname)
-    
-class Post(db.Model):
+        return "<User %r: %r>" % (self.name, self.email)
+
+class Shift(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    body = db.Column(db.String(140))
-    timestamp = db.Column(db.DateTime)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    team = db.Column(db.Integer, db.ForeignKey('team.id'))
+    start_dt = db.Column(db.DateTime)
+    end_dt = db.Column(db.DateTime)
+    shift_type = db.Column(db.Integer, db.ForeignKey('shift_type.id'))
+    
+    users = db.relationship('User', secondary=shift_user_map,
+                             backref=db.backref('shifts_bk', lazy='dynamic'))
     
     def __repr__(self):
-        return "<Post %r>" % (self.body)
+        return "<Shift from %r to %r>" % (self.start_dt, self.end_dt)
+
+class Shift_type(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(32))
+    
+    shifts = db.relationship('Shift', backref='shift_type_bk', lazy='dynamic')
+    team_user_mappings = db.relationship('Team_User_map', backref='shift_type_bk', lazy='dynamic')
+    
+    def __repr__(self):
+        return "<Shift type %r>" % (self.id)
+
+class Preference(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    preference = db.Column(db.String(256))
+    user = db.Column(db.Integer, db.ForeignKey('user.id'))
+    
+    def __repr__(self):
+        return "<Preference %r by user %r>" % (self.preference, self.user)
