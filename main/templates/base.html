@@ -1,0 +1,28 @@
+<html>
+
+<head>
+	{% if title %}
+	<title>{{ title }} - with Flask</title>
+	{% else %}
+	<title>RA Scheduler - with Flask</title>
+	{% endif %}
+</head>
+
+<body>
+	{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			<ul>
+			{% for message in messages %}
+				<li>{{ message }}</li>
+			{% endfor %}
+			</ul>
+		{% endif %}
+	{% endwith %}
+	<div>RA Scheduler:
+		<a href="/index">Home</a> |
+	</div>
+	<hr>
+	{% block content %}{% endblock %}
+</body>
+
+</html>
