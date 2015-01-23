@@ -1,11 +1,10 @@
 # RA-Scheduler
 
-You need to execute and install the following:
-pip install flask
-pip install flask-sqlalchemy
-pip install sqlalchemy-migrate
-pip install flask-wtf
-
+'You need to execute and install the following:
+'pip install flask
+'pip install flask-sqlalchemy
+'pip install sqlalchemy-migrate
+'pip install flask-wtf
 You may need these later on:
 pip install flask-login
 pip install flask-openid
