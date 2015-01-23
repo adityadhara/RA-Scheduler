@@ -1,21 +1,21 @@
 # RA-Scheduler
 
-<p>You need to execute and install the following:</p>
+<p>You need to execute and install the following (pip is a good working solution):</p>
 <ul>
-<li>pip install flask</li>
-<li>pip install flask-sqlalchemy</li>
-<li>pip install sqlalchemy-migrate</li>
-<li>pip install flask-wtf</li>
+<li>flask</li>
+<li>flask-sqlalchemy</li>
+<li>sqlalchemy-migrate</li>
+<li>flask-wtf</li>
 </ul>
 
 <p>You may need these later on:</p>
 <ul>
-<li>pip install flask-login</li>
-<li>pip install flask-openid</li>
-<li>pip install flask-mail</li>
-<li>pip install flask-whooshalchemy</li>
-<li>pip install flask-babel</li>
-<li>pip install guess_language</li>
-<li>pip install flipflop</li>
-<li>pip install coverage</li>
+<li>flask-login</li>
+<li>flask-openid</li>
+<li>flask-mail</li>
+<li>flask-whooshalchemy</li>
+<li>flask-babel</li>
+<li>guess_language</li>
+<li>flipflop</li>
+<li>coverage</li>
 </ul>
