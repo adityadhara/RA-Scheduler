@@ -1,4 +1,50 @@
 {% extends "base.html" %}
 {% block content %}
-	<h1>View schedules</h1>
+
+{% if schedules %}
+  <div class="page-header">
+    <h1>Your schedules</h1>
+    <p class="lead">Click on a schedule to find out more about it</p>
+  </div>
+
+  <div class="col-md-10">
+    <table class="table">
+      <tbody>
+	{% for schedule in schedules %}
+	<tr>
+	  <th><b>{{ schedule.name }}</b></th>
+	  <th>{{ schedule.start_date_str }} - {{ schedule.end_date_str}}</th>
+	  <th>
+	    {% if schedule.status == "pending" %}
+	    <button type="button" class="btn btn-xs btn-primary">Add preferences</button>
+	    {% endif %}
+
+	    {% if schedule.status == "waiting" %}
+	    <button type="button" class="btn btn-xs btn-warning">Modify preferences</button>
+	    {% endif %}
+
+	    {% if schedule.status == "active" %}
+	    <button type="button" class="btn btn-xs btn-success">View calendar</button>
+	    <button type="button" class="btn btn-xs btn-success">Request trade</button>
+	    {% endif %}
+
+	    {% if schedule.status == "expired" %}
+	    {% endif %}
+	    
+	  </th>
+	</tr>
+
+	{% endfor %}
+      </tbody>
+    </table>
+  </div>
+    
+{% else %}
+  <h1>There are no schedules to display at this time</h1>
+{% endif %}
+
+
 {% endblock %}
+
+
+
