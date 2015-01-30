@@ -44,8 +44,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(64), index=True, unique=True)
     name = db.Column(db.String(64))
-    
-    pwd = db.relationship('User_pwd', backref='user_bk', lazy='dynamic')
+
     leader_of = db.relationship('Team', backref='leader_bk', lazy='dynamic')
     team_mappings = db.relationship('Team_User_map', backref='user_bk', lazy='dynamic')
     preferences = db.relationship('Preference', backref='user_bk', lazy='dynamic')
@@ -70,8 +69,8 @@ class User(db.Model):
 
 class User_pwd(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True)
-    pwd_hash = db.Column(db.String(64))
+    user_id = db.Column(db.Integer, unique=True)
+    pwd_hash = db.Column(db.String(256))
     
     def __repr__(self):
         return "<pwd for user: %r>" % (self.user_id)

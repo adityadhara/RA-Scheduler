@@ -4,6 +4,7 @@ from flask.ext import login
 from main import app, db, lm, oid
 import models
 import forms
+import mocks
 
 #pre-rendering
 @app.before_request
@@ -25,43 +26,18 @@ def manage_schedules():
 @login.login_required
 @app.route('/view_schedules')
 def view_schedules():
-    #make a mock schedule list
-    schedule2 = {'status': 'pending',
-                 'name': 'Warren Towers',
-                 'start_date_str': 'February 15, 2015',
-                 'end_date_str': 'March 20, 2015' }
-
-    mock_schedule_list = [
-        {
-            'status': 'pending',
-            'name': 'Warren Towers 1',
-            'start_date_str': 'January 15, 2015',
-            'end_date_str': 'March 20, 2015'
-        },
-        {
-            'status': 'waiting',
-            'name': 'Warren Towers 2',
-            'start_date_str': 'February 15, 2015',
-            'end_date_str': 'March 20, 2015'
-        },
-        {
-            'status': 'active',
-            'name': 'Warren Towers 3',
-            'start_date_str': 'January 10, 2015',
-            'end_date_str': 'March 20, 2015'
-        },
-        {
-            'status': 'expired',
-            'name': 'Warren Towers 4',
-            'start_date_str': 'February 15, 2014',
-            'end_date_str': 'March 20, 2014'
-        },
-    ]
-    
+    mock_list = mocks.mock_schedule_list
     return render_template("view_schedules.html", title="View",
-                           schedules=mock_schedule_list)
+                           schedules=mock_list)
 
-
+@login.login_required
+@app.route('/settings')
+def settings():
+    #load user data and populate form
+    if regform.validate_on_submit():
+        #process changed data
+        pass
+    return render_template("settings.html", title="Settings")
 
 #login management
 @lm.user_loader
@@ -79,7 +55,7 @@ def after_login(resp):
     if resp.email is None or resp.email == "":
         flash('Invalid login. Please try again.')
         return redirect(url_for('login'))
-    user = User.query.filter_by(email=resp.email).first()
+    user = models.User.query.filter_by(email=resp.email).first()
     if user is None:
         name = resp.email.split("@")[0]
         user = models.User(name=name, email=resp.email)
@@ -104,26 +80,38 @@ def login(serv=None):
         if serv=="login":
             if loginform.validate_on_submit():
                 tmp_data = {'email': loginform.email.data}
-                match = models.User.query.filter(email=loginform.email.data).first()
-                if match == None:
+                user = models.User.query.filter_by(email=loginform.email.data).first()
+                if user == None:
                     flash("Email not found, you need to register")
-                    regform.populate_obj(tmp_data)
+                    #TODO: automatically fill regform
+                    #regform.populate_obj(tmp_data)
                     #goes to --default
-                pwd_match = models.User_pwds.query.filter(user_id=match.id, pwd_hash=loginform.pass_hash.data).first()
-                if pwd_match == None:
+                pwd_match = models.User_pwd.query.filter_by(user_id=user.id).first()
+                match = (pwd_match.pwd_hash == loginform.pwd_hash.data)
+                if not match:
                     flash("Password incorrect, try again")
-                    loginform.populate_obj(tmp_data)
+                    #TODO: automatically fill loginform
+                    #loginform.populate_obj(tmp_data)
                     #goes to --default
-                login_user(match)
+                login_user(user)
                 return redirect(request.args.get('next') or url_for('index'))
         elif serv=="register":
             if regform.validate_on_submit():
-                user = models.User(name=regform.name.data,
-                                   email=regform.email.data,
-                                   pwd=regform.pass_hash.data)
-                db.session.add(user)
-                db.session.commit()
-            return redirect(request.args.get('next') or url_for('index'))
+                test = models.User.query.filter_by(email=regform.email.data).first()
+                if test:
+                    flash("Username " + str(test.email) + " already exists")
+                else:
+                    user = models.User(name=regform.name.data,
+                                   email=regform.email.data)
+                    db.session.add(user)
+                    db.session.commit()
+                    user = models.User.query.filter_by(email=regform.email.data).first()
+                    pwd = models.User_pwd(user_id=user.id,
+                                      pwd_hash=regform.pwd_hash.data)
+                    db.session.add(pwd)
+                    db.session.commit()
+                    login_user(user)
+                    return redirect(request.args.get('next') or url_for('index'))
         else:
             req = app.config['OPENID_PROVIDERS'][buttonslist.index(serv)]['url']
             return oid.try_login(req, ask_for=['email'])
@@ -132,9 +120,3 @@ def login(serv=None):
                            buttons=buttonslist,
                            login=loginform,
                            reg=regform)
-    
-    
-    
-    
-    
-    
