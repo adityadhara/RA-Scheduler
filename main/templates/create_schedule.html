@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% set active_page = "manage_schedules" %}
+
+{% block content %}
+
+<div class="page-header">
+  <h1>Create a new schedule</h1>
+  <p class="lead">Describe your schedule below, by detailing which shifts will need to be filled, and providing some information about the team members who will fill them.</p>
+</p>
+</div>
+
+<div class="page-header">
+  <h2>Shifts</h2>
+  <p class="lead">What days need to be covered? Select the relevant shifts in the calendar below</p>
+  <p>If there is more than one type of shift (for example, if you have a mixture of longer and shorter shifts), you can create custom shift types.</p>
+</p>
+</div>
+
+<div class="page-header">
+  <h2>Team members</h2>
+  <p class="lead">Who will work these shifts? Fill out their names and email addresses below so that we can send them a link with instructions on how to indicate their shift preferences.</p>
+  <p>The number of shifts will be evenly distributed amongst these team members by default. However, if some team members need to work more or less shifts, you can indicate that below.</p>
+</p>
+</div>
+
+
+<div class="page-header">
+  <h2>Email to send</h2>
+  <p class="lead">Personalize the email that will be sent out to your team members</p>
+</div>
+
+
+<div class="col-md-12 text-center"> 
+  <button type="button" class="btn btn-success">Create schedule</button>
+</div>
+{% endblock %}

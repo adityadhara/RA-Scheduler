@@ -33,6 +33,12 @@ def view_schedules():
                            schedules=mock_list)
 
 @login.login_required
+@app.route('/create_schedule')
+def create_schedule():
+    #TODO: Currently this is just the UI -- change later. 
+    return render_template("create_schedule.html", title="View")
+
+@login.login_required
 @app.route('/settings')
 def settings():
     #load user data and populate form
