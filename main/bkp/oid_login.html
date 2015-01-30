@@ -51,4 +51,11 @@
 		</table>
 		</form>
 	</div>
+	<p>Or you can login using one of the following providers:
+	<ul>
+	{% for button in buttons %}
+		<li><a href="{{ url_for('login') + "/" + button }}">{{ button }}</a></li>
+	{% endfor %}
+	</ul>
+	</p>
 {% endblock %}

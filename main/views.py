@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, request, url_for, g
 from flask.ext.login import current_user, logout_user, login_user
 from flask.ext import login
-from main import app, db, lm, oid
+from main import app, db, lm
 import models
 import forms
 import mocks
@@ -65,7 +65,6 @@ def login(serv=None):
             flash("Invalid request")
     #--default
     return render_template("login.html", title="Login",
-                           buttons=buttonslist,
                            login=loginform,
                            reg=regform)
     
@@ -102,7 +101,7 @@ def register(regform):
                        email=regform.email.data)
         db.session.add(user)
         db.session.commit()
-        user = models.User.query.filter_by(email=regform.email.data).first()
+        user = models.User.query.filter_by(email=regform.email.data).first() #can this be cleaner?
         pwd = models.User_pwd(user_id=user.id,
                           pwd_hash=regform.pwd_hash.data)
         db.session.add(pwd)
