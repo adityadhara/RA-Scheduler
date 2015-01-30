@@ -2,5 +2,40 @@
 {% set active_page = "manage_schedules" %}
 
 {% block content %}
-	<h1>Manage schedules</h1>
+{% if schedules %}
+  <div class="page-header">
+    <h1>Schedules you manage</h1>
+    <p class="lead">Click on an existing schedule to modify it, or create a new one</p>
+  </div>
+
+  <div class="col-md-10">
+    <table class="table">
+      <tbody>
+	{% for schedule in schedules %}
+	<tr>
+	  <th><b>{{ schedule.name }}</b></th>
+	  <th>{{ schedule.start_date_str }} - {{ schedule.end_date_str}}</th>
+	  <th>
+	    <button type="button" class="btn btn-xs btn-primary">View participants</button>
+	    <button type="button" class="btn btn-xs btn-primary">View calendar</button>
+
+	    {# If the schedule isn't active yet, we can generate an assignment #}
+	    {% if schedule.status == "pending" or schedule.status == "waiting" %}
+	    <button type="button" class="btn btn-xs btn-success">Assign shifts</button>
+	    {% endif %}
+	    
+	  </th>
+	</tr>
+
+	{% endfor %}
+      </tbody>
+    </table>
+  </div>
+    
+{% else %}
+  <div class="page-header">
+    <h1>There are no schedules to display at this time</h1>
+    <p class="lead">When you join a team, you will be added to its schedule which will be shown here.</p>
+  </div>
+{% endif %}
 {% endblock %}

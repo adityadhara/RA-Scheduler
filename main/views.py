@@ -21,7 +21,9 @@ def index():
 @login.login_required
 @app.route('/manage_schedules')
 def manage_schedules():
-    return render_template("manage_schedules.html", title="Manage")
+    mock_list = mocks.mock_schedule_list
+    return render_template("manage_schedules.html", title="Manage",
+                           schedules=mock_list)
 
 @login.login_required
 @app.route('/view_schedules')
