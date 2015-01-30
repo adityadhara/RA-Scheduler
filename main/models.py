@@ -43,17 +43,38 @@ class Team_User_map(db.Model):
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(64), index=True, unique=True)
-    pwd_hash = db.Column(db.String(64))
     name = db.Column(db.String(64))
     
+    pwd = db.relationship('User_pwd', backref='user_bk', lazy='dynamic')
     leader_of = db.relationship('Team', backref='leader_bk', lazy='dynamic')
     team_mappings = db.relationship('Team_User_map', backref='user_bk', lazy='dynamic')
     preferences = db.relationship('Preference', backref='user_bk', lazy='dynamic')
     shifts = db.relationship('Shift', secondary=shift_user_map,
                              backref=db.backref('users_bk', lazy='dynamic'))
     
+    #login compatibility!
+    def is_authenticated(self):
+        return True
+    
+    def is_active(self):
+        return True
+    
+    def is_anonymous(self):
+        return False
+    
+    def get_id(self):
+        return str(self.id)
+    
     def __repr__(self):
         return "<User %r: %r>" % (self.name, self.email)
+
+class User_pwd(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True)
+    pwd_hash = db.Column(db.String(64))
+    
+    def __repr__(self):
+        return "<pwd for user: %r>" % (self.user_id)
 
 class Shift(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -7,9 +7,9 @@ All from http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iv-dat
 from migrate.versioning import api
 from config import SQLALCHEMY_DATABASE_URI
 from config import SQLALCHEMY_MIGRATE_REPO
-from main import db
-import imp
 import os.path
+import imp
+from main import db
 
 def db_create():
     db.create_all()
@@ -20,7 +20,7 @@ def db_create():
     else:
         api.version_control(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO, api.version(SQLALCHEMY_MIGRATE_REPO))
     print "New database created at:", SQLALCHEMY_DATABASE_URI
-    
+
 def db_migrate():
     v = api.db_version(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO)
     migration = SQLALCHEMY_MIGRATE_REPO + ('/versions/%03d_migration.py' % (v+1))
