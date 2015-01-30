@@ -34,9 +34,8 @@ def view_schedules():
 @app.route('/settings')
 def settings():
     #load user data and populate form
-    if regform.validate_on_submit():
+    #if regform.validate_on_submit():
         #process changed data
-        pass
     return render_template("settings.html", title="Settings")
 
 #login management
