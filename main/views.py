@@ -39,6 +39,12 @@ def create_schedule():
     return render_template("create_schedule.html", title="View")
 
 @login.login_required
+@app.route('/update_preferences')
+def update_preferences():
+    #TODO: Currently this is just the UI -- change later. 
+    return render_template("update_preferences.html", title="View")
+
+@login.login_required
 @app.route('/settings')
 def settings():
     #load user data and populate form
