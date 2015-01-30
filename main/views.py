@@ -92,15 +92,11 @@ def login(loginform):
     user = models.User.query.filter_by(email=loginform.email.data).first()
     if user == None:
         flash("Email not found, you need to register")
-        #TODO: automatically fill regform
-        #regform.populate_obj(tmp_data)
         return
     pwd_match = models.User_pwd.query.filter_by(user_id=user.id).first()
     match = (pwd_match.pwd_hash == loginform.pwd_hash.data)
     if not match:
         flash("Password incorrect, try again")
-        #TODO: automatically fill loginform
-        #loginform.populate_obj(tmp_data)
         return
     login_user(user)
     return redirect(request.args.get('next') or url_for('index'))

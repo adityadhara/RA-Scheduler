@@ -5,11 +5,16 @@ All from http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-iv-dat
 - others are extra - who knows if we'll need it
 '''
 from migrate.versioning import api
-from config import SQLALCHEMY_DATABASE_URI
-from config import SQLALCHEMY_MIGRATE_REPO
+from config import SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO, db_path
 import os.path
 import imp
 from main import db
+
+def compare_db_model():
+    if os.path.isfile(db_path) and os.path.isdir(SQLALCHEMY_MIGRATE_REPO):
+        truth = api.compare_model_to_db(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO, db.metadata)
+        return truth
+    return None
 
 def db_create():
     db.create_all()

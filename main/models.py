@@ -44,6 +44,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(64), index=True, unique=True)
     name = db.Column(db.String(64))
+    temp = db.Column(db.String(10))
 
     leader_of = db.relationship('Team', backref='leader_bk', lazy='dynamic')
     team_mappings = db.relationship('Team_User_map', backref='user_bk', lazy='dynamic')
