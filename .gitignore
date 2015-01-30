@@ -1,3 +1,5 @@
 *~
 *.pyc
 .DS_Store
+main.db
+db_repository
