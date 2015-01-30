@@ -2,12 +2,20 @@
 {% set active_page = "manage_schedules" %}
 
 {% block content %}
+
+<div class="page-header">
+  <h1>Create a new schedule</h1>
+  <p>Get started by describing the shifts that need to be filled and listing the people who will work these shifts</p>
+  <button type="button" class="btn btn-primary">Create schedule</button>
+</p>
+</div>
+
 {% if schedules %}
   <div class="page-header">
     <h1>Schedules you manage</h1>
     <p class="lead">Click on an existing schedule to modify it, or create a new one</p>
   </div>
-
+  
   <div class="col-md-10">
     <table class="table">
       <tbody>
@@ -33,9 +41,7 @@
   </div>
     
 {% else %}
-  <div class="page-header">
-    <h1>There are no schedules to display at this time</h1>
-    <p class="lead">When you join a team, you will be added to its schedule which will be shown here.</p>
-  </div>
+  {# The user doesn't currently have any schedules #}
 {% endif %}
+
 {% endblock %}
