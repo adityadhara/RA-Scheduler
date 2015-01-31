@@ -71,11 +71,12 @@
 	<div id="flashes">
   	{% with messages = get_flashed_messages() %}
   	  {% if messages %}
-  	  	<ul>
+  	  	<div class="alert alert-danger" role="alert">
   	  	{% for message in messages %}
-  	  		<li>{{message}}</li>
+  			<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+  			{{ message }}
   	  	{% endfor %}
-  	  	</ul>
+  	  	</div>
   	  {% endif %}
   	{% endwith %}
   </div>

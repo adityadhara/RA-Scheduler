@@ -3,7 +3,7 @@ from flask.ext.login import current_user, logout_user, login_user
 from flask.ext import login
 from main import app, db, lm
 import models, forms
-import hashlib, random
+import hashlib, random, string
 import mocks
 
 #pre-rendering
@@ -113,7 +113,7 @@ def attempt_register(regform):
         flash("Username " + str(test.email) + " already exists")
         return
     else:
-        user = models.User(name=regform.name.data,
+        user = models.User(name=string.capwords(regform.name.data),
                        email=regform.email.data,
                        salt=make_salt())
         db.session.add(user)

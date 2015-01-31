@@ -4,55 +4,82 @@
 {% block js_imports %}
 	<script src="/static/js/sha256.js"></script>
 	<script>
-	function pwd_bind(elem1, elem2) {
-		$(elem1).blur(function() {
-			$(elem2).val(Sha256.hash($(elem1).val()));
-		});
-	}
 	$(document).ready(function() {
-		pwd_bind("#login_password", "[name=login] #pwd_secret")
-		pwd_bind("#reg_password", "[name=register] #pwd_secret")
-		pwd_bind("#reg_password_repeat", "[name=register] #pwd2_secret")
+		$("[name=login]").submit(function() {
+			$("[name=login] #pwd_secret").val(Sha256.hash($("#login_password").val()));
+		});
+		$("[name=register]").submit(function() {
+			$("[name=register] #pwd_secret").val(Sha256.hash($("#reg_password").val()));
+			$("[name=register] #pwd2_secret").val(Sha256.hash($("#reg_password_repeat").val()));
+		});
 	});
 </script>
 {% endblock %}
 {% block content %}
-	<div id="login">
-		<form action="{{ url_for('login') + '/login' }}" method="post" name="login">
-		{{ login.hidden_tag() }}
-		{% for key in login.errors %}
-			{% for error in login.errors[key] %}
-			<span style="color: red;">{{ error }}</span>
-			{% endfor %}
-		{% endfor %}
-		<table>
-			<tr><td>{{ login.email.label }}</td>
-			<td>{{ login.email(size=20) }}</td></tr>
-			<tr><td><label for="login_password">Enter password:</label></td>
-			<td><input id="login_password" name="login_password" size="20" type="password" value=""></td></tr>
-			<tr><td><input id="login_submit" type="submit" value="Log in"></td></tr>
-		</table>
-		</form>
-	</div>
-	<div id="registration">
-		<form action="{{ url_for('login') + '/register' }}" method="post" name="register">
-		{{ reg.hidden_tag() }}
-		{% for key in reg.errors %}
-			{% for error in reg.errors[key] %}
-			<span style="color: red;">{{ error }}</span>
-			{% endfor %}
-		{% endfor %}
-		<table>
-			<tr><td>{{ reg.email.label }}</td>
-			<td>{{ reg.email(size=20) }}</td></tr>
-			<tr><td><label for="reg_password">Enter password</label></td>
-			<td><input id="reg_password" name="reg_password" size="20" type="password"></td></td></tr>
-			<tr><td><label for="reg_password_repeat">Re-enter password:</label></td>
-			<td><input id="reg_password_repeat" name="reg_password_repeat" size="20" type="password"></td></tr>
-			<tr><td>{{ reg.name.label }}</td>
-			<td>{{ reg.name(size=20) }}</td></tr>
-			<tr><td><input id="reg_submit" type="submit" value="Register"></td></tr>
-		</table>
-		</form>
+	<div class="row">
+		<div class="col-md-6" id="login">
+			<div class="header">
+				<h1>Login</h1>
+			</div>
+			<form role="form" action="{{ url_for('login') + '/login' }}" method="post" name="login">
+				{{ login.hidden_tag() }}
+				<div class="form-group">
+					{{ login.email.label(class="control-label col-sm-4") }}
+					<div class="col-sm-8">{{ login.email(class="form-control") }}</div>
+					<span class="help-block">
+						{% if login.email.errors %}{% for error in login.email.errors %}{{error}}{% endfor %}{% endif %}
+					</span>
+				</div>
+				<div class="form-group">
+					<label class="control-label col-sm-4" for="login_password">Enter password:</label>
+					<div class="col-sm-8"><input class="form-control" id="login_password" name="login_password" type="password" value=""></div>
+					<span class="help-block">
+						{% if login.pwd_hash.errors %}{% for error in login.pwd_hash.errors %}{{error}}{% endfor %}{% endif %}
+					</span>
+				</div>
+				<div class="form-group">
+					<input class="btn btn-primary" id="login_submit" type="submit" value="Log in">
+				</div>
+			</form>
+		</div>
+		<div class="col-md-6" id="registration">
+			<div class="header">
+				<h1>Register</h1>
+			</div>
+			<form role="form" action="{{ url_for('login') + '/register' }}" method="post" name="register">
+			{{ reg.hidden_tag() }}
+				<div class="form-group">
+					{{ reg.email.label(class="control-label col-sm-4") }}
+					<div class="col-sm-8">{{ reg.email(class="form-control") }}</div>
+					<span class="help-block">
+						{% if reg.email.errors %}{% for error in reg.email.errors %}{{error}}{% endfor %}{% endif %}
+					</span>
+				</div>
+				<div class="form-group">
+					<label class="control-label col-sm-4" for="reg_password">Enter password</label>
+					<div class="col-sm-8"><input class="form-control" id="reg_password" name="reg_password" type="password"></div>
+					<span class="help-block">
+						{% if reg.pwd_hash.errors %}{% for error in reg.pwd_hash.errors %}{{error}}{% endfor %}{% endif %}
+					</span>
+				</div>
+				<div class="form-group">
+					<label class="control-label col-sm-4" for="reg_password_repeat">Re-enter password:</label>
+					<div class="col-sm-8"><input class="form-control" id="reg_password_repeat" name="reg_password_repeat" type="password"></div>
+					<span class="help-block">
+						{% if reg.pwd2_hash.errors %}{% for error in reg.pwd2_hash.errors %}{{error}}{% endfor %}{% endif %}
+					</span>
+				</div>
+				<div class="form-group">
+					{{ reg.name.label(class="control-label col-sm-4") }}
+					<div class="col-sm-8">{{ reg.name(class="form-control") }}</div>
+					<span class="help-block">
+						{% if reg.name.errors %}{% for error in reg.name.errors %}{{error}}{% endfor %}{% endif %}
+					</span>
+				</div>
+				<div class="form-group">
+					<input class="btn btn-default" id="reg_submit" type="submit" value="Register">
+				</div>
+			</form>
+		</div>
 	</div>
 {% endblock %}
