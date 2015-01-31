@@ -2,8 +2,8 @@ from flask import render_template, flash, redirect, request, url_for, g
 from flask.ext.login import current_user, logout_user, login_user
 from flask.ext import login
 from main import app, db, lm
-import models
-import forms
+import models, forms
+import hashlib, random
 import mocks
 
 #pre-rendering
@@ -69,11 +69,11 @@ def login(serv=None):
     if serv:
         if serv=="login":
             if loginform.validate_on_submit():
-                try_login = login(loginform)
+                try_login = attempt_login(loginform)
                 if try_login: return try_login
         elif serv=="register":
             if regform.validate_on_submit():
-                try_reg = register(regform)
+                try_reg = attempt_register(regform)
                 if try_reg: return try_reg
         else:
             flash("Invalid request")
@@ -87,34 +87,47 @@ def login(serv=None):
 def load_user(id):
     return models.User.query.get(int(id))
 
-def login(loginform):
+def attempt_login(loginform):
     tmp_data = {'email': loginform.email.data}
     user = models.User.query.filter_by(email=loginform.email.data).first()
     if user == None:
         flash("Email not found, you need to register")
         return
     pwd_match = models.User_pwd.query.filter_by(user_id=user.id).first()
-    match = (pwd_match.pwd_hash == loginform.pwd_hash.data)
+    hash = hashlib.sha512(loginform.pwd_hash.data + user.salt).hexdigest()
+    match = (pwd_match.pwd_hash == hash)
     if not match:
         flash("Password incorrect, try again")
-        return
-    login_user(user)
+    else:
+        user.salt = make_salt()
+        pwd_match.pwd_hash = make_hash(str(loginform.pwd_hash.data) + str(user.salt))
+        db.session.add(user)
+        db.session.add(pwd_match)
+        db.session.commit()
+        login_user(user)
     return redirect(request.args.get('next') or url_for('index'))
 
-def register(regform):
+def attempt_register(regform):
     test = models.User.query.filter_by(email=regform.email.data).first()
     if test:
         flash("Username " + str(test.email) + " already exists")
         return
     else:
         user = models.User(name=regform.name.data,
-                       email=regform.email.data)
+                       email=regform.email.data,
+                       salt=make_salt())
         db.session.add(user)
         db.session.commit()
-        user = models.User.query.filter_by(email=regform.email.data).first() #can this be cleaner?
-        pwd = models.User_pwd(user_id=user.id,
-                          pwd_hash=regform.pwd_hash.data)
+        hash = make_hash(str(regform.pwd_hash.data) + str(user.salt))
+        pwd = models.User_pwd(user_id=user.id, #id available because commit made
+                          pwd_hash=hash)
         db.session.add(pwd)
         db.session.commit()
         login_user(user)
         return redirect(request.args.get('next') or url_for('index'))
+
+def make_salt():
+    return ("%08d" % (random.randint(1, 99999999)))
+
+def make_hash(text):
+    return hashlib.sha512(text).hexdigest()

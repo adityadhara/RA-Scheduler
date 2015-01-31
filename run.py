@@ -1,4 +1,4 @@
-import os
+import os, sys
 import config, db_manage
 from main import app
 
@@ -10,7 +10,6 @@ if not os.path.isfile(config.db_path):
 #check db up to date else migrate
 result = db_manage.compare_db_model()
 if result and result != "No schema diffs":
-    print result
     db_manage.db_migrate()
 
 #run app

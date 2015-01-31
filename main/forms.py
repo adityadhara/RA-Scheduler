@@ -4,17 +4,17 @@ from wtforms import validators
 
 #we may not use this or registration if we are only using OpenID
 class Login(Form):
-    email = wtforms.StringField("Email (Username)", [validators.DataRequired("Username missing"), validators.Email()])
-    pwd_hash = wtforms.HiddenField("pwdhidden", [validators.DataRequired("Password missing")], id="pwd_secret")
+    email = wtforms.StringField("Email (Username)", [validators.DataRequired(message="Username missing"), validators.Email(message="Email address invalid")])
+    pwd_hash = wtforms.HiddenField("pwd_secret", [validators.DataRequired(message="Password missing")], id="pwd_secret")
     
 class Registration(Login):
     #validator:
     def check_same(form, field):
-        if field.data != form.password.data:
+        if field.data != form.pwd_hash.data:
             raise validators.ValidationError("Password is not the same")
     
-    name = wtforms.StringField("Full name", [validators.DataRequired("Name required")])
-    pwd2_hash = wtforms.HiddenField("pwd2hidden", [validators.DataRequired("Repeat password")], id="pwd2_secret")
+    name = wtforms.StringField("Full name", [validators.DataRequired(message="Name required")])
+    pwd2_hash = wtforms.HiddenField("pwd2_secret", [validators.DataRequired(message="Repeat password"), check_same], id="pwd2_secret")
 
 #other forms
 class CreateTeam(Form):

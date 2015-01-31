@@ -20,8 +20,10 @@
 	<div id="login">
 		<form action="{{ url_for('login') + '/login' }}" method="post" name="login">
 		{{ login.hidden_tag() }}
-		{% for error in login.errors %}
+		{% for key in login.errors %}
+			{% for error in login.errors[key] %}
 			<span style="color: red;">{{ error }}</span>
+			{% endfor %}
 		{% endfor %}
 		<table>
 			<tr><td>{{ login.email.label }}</td>
@@ -35,8 +37,10 @@
 	<div id="registration">
 		<form action="{{ url_for('login') + '/register' }}" method="post" name="register">
 		{{ reg.hidden_tag() }}
-		{% for error in reg.errors %}
+		{% for key in reg.errors %}
+			{% for error in reg.errors[key] %}
 			<span style="color: red;">{{ error }}</span>
+			{% endfor %}
 		{% endfor %}
 		<table>
 			<tr><td>{{ reg.email.label }}</td>

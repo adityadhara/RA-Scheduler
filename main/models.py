@@ -42,9 +42,9 @@ class Team_User_map(db.Model):
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(64), index=True, unique=True)
-    name = db.Column(db.String(64))
-    temp = db.Column(db.String(10))
+    email = db.Column(db.String(254), index=True, unique=True)  #email addresses cannot be longer than 254 characters
+    name = db.Column(db.String(100))
+    salt = db.Column(db.String(8), default="0")  #default 0 used to signify oid use
 
     leader_of = db.relationship('Team', backref='leader_bk', lazy='dynamic')
     team_mappings = db.relationship('Team_User_map', backref='user_bk', lazy='dynamic')
@@ -71,7 +71,7 @@ class User(db.Model):
 class User_pwd(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, unique=True)
-    pwd_hash = db.Column(db.String(256))
+    pwd_hash = db.Column(db.String(128))
     
     def __repr__(self):
         return "<pwd for user: %r>" % (self.user_id)
