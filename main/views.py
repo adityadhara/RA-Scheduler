@@ -28,6 +28,7 @@ def manage_schedules():
 @login.login_required
 @app.route('/view_schedules')
 def view_schedules():
+    print current_user
     mock_list = mocks.mock_schedule_list
     return render_template("view_schedules.html", title="View",
                            schedules=mock_list)
@@ -45,12 +46,19 @@ def update_preferences():
     return render_template("update_preferences.html", title="View")
 
 @login.login_required
-@app.route('/settings')
-def settings():
-    #load user data and populate form
-    #if regform.validate_on_submit():
+@app.route('/profile', methods=['GET', 'POST'])
+def profile():
+    form = forms.Profile(obj=current_user)
+    print "pwd_hash", form.pwd_hash.data
+    print "pwd2_hash", form.pwd2_hash.data
+    if form.validate_on_submit():
+        print current_user.__dict__
+        print form.__dict__
         #process changed data
-    return render_template("settings.html", title="Settings")
+    form.pwd_hash.data = "" #clear field after validation
+    form.pwd2_hash.data = ""
+    return render_template("profile.html", title="Your Profile",
+                           profileform=form)
 
 @app.route('/logout')
 def logout():
@@ -60,7 +68,7 @@ def logout():
 @app.route("/login")
 @app.route("/login/<serv>", methods=['GET', 'POST'])
 def login(serv=None):
-    if g.user is not None and g.user.is_authenticated():
+    if current_user is not None and current_user.is_authenticated():
         return redirect(url_for('index'))
     
     regform = forms.Registration()
@@ -91,13 +99,14 @@ def attempt_login(loginform):
     tmp_data = {'email': loginform.email.data}
     user = models.User.query.filter_by(email=loginform.email.data).first()
     if user == None:
-        flash("Email not found, you need to register")
+        flash("Email or password incorrect, try again or register")
         return
     pwd_match = models.User_pwd.query.filter_by(user_id=user.id).first()
     hash = hashlib.sha512(loginform.pwd_hash.data + user.salt).hexdigest()
     match = (pwd_match.pwd_hash == hash)
     if not match:
-        flash("Password incorrect, try again")
+        flash("Email or password incorrect, try again or register")
+        return
     else:
         user.salt = make_salt()
         pwd_match.pwd_hash = make_hash(str(loginform.pwd_hash.data) + str(user.salt))

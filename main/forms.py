@@ -8,14 +8,22 @@ class Login(Form):
     pwd_hash = wtforms.HiddenField("pwd_secret", [validators.DataRequired(message="Password missing")], id="pwd_secret")
     
 class Registration(Login):
-    #validator:
-    def check_same(form, field):
-        if field.data != form.pwd_hash.data:
-            raise validators.ValidationError("Password is not the same")
-    
     name = wtforms.StringField("Full name", [validators.DataRequired(message="Name required")])
-    pwd2_hash = wtforms.HiddenField("pwd2_secret", [validators.DataRequired(message="Repeat password"), check_same], id="pwd2_secret")
+    pwd2_hash = wtforms.HiddenField("pwd2_secret", [validators.DataRequired(message="Repeat password"), validators.EqualTo('pwd_hash', "Passwords must be the same")], id="pwd2_secret")
 
+class Profile(Registration):
+    #new validator for pwd2_hash 
+    def check_equal_if_pwd(form, field):
+        if form.pwd_hash.data and form.pwd_hash.data != "":
+            if form.pwd_hash.data != field.data:
+                raise validators.ValidationError("Passwords must be the same")
+    
+    #modify pwd_hash and pwd2_hash
+    pwd_hash = wtforms.HiddenField("pwd_secret", [validators.Optional()], id="pwd_secret")
+    pwd2_hash = wtforms.HiddenField("pwd2_secret", [check_equal_if_pwd], id="pwd2_secret")
+    
+    old_pwd_hash = wtforms.HiddenField("old_pwd_secret", [validators.DataRequired(message="Current password required")], id="old_pwd_secret")
+    
 #other forms
 class CreateTeam(Form):
     name = wtforms.StringField("Team Name", [validators.DataRequired()])

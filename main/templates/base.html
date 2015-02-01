@@ -21,12 +21,12 @@
   ('/view_schedules', 'view_schedules', 'View my schedules'),
   ('/manage_schedules', 'manage_schedules', 'Manage schedules')
 ] -%}
-{% set user_navigation_bar = [
-  ('/settings', 'settings', 'Settings'),
-  ('/logout', 'logout', 'Logout')
-] -%}
 {% set non_user_navigation_bar = [
   ('/login', 'login', 'Login')
+] -%}
+{% set user_navigation_bar = [
+  ('/profile', 'profile', 'Profile'),
+  ('/logout', 'logout', 'Logout')
 ] -%}
 
 {% set active_page = active_page|default('index') -%}
