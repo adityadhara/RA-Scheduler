@@ -49,12 +49,20 @@ def update_preferences():
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
     form = forms.Profile(obj=current_user)
-    print "pwd_hash", form.pwd_hash.data
-    print "pwd2_hash", form.pwd2_hash.data
     if form.validate_on_submit():
-        print current_user.__dict__
-        print form.__dict__
-        #process changed data
+        pwd_row = models.User_pwd.query.get(current_user.id)
+        hash = make_hash(form.old_pwd_hash.data, current_user.salt)
+        if hash == pwd_row.pwd_hash:
+            current_user.salt = make_salt()
+            if form.pwd_hash.data != "":
+                pwd_row.pwd_hash = make_hash(form.pwd_hash.data, current_user.salt)
+            else:
+                pwd_row.pwd_hash = make_hash(form.old_pwd_hash.data, current_user.salt)
+            form.populate_obj(current_user)
+            db.session.commit()
+        else:
+            flash("Incorrect current password")
+        #db.commit()
     form.pwd_hash.data = "" #clear field after validation
     form.pwd2_hash.data = ""
     return render_template("profile.html", title="Your Profile",
@@ -102,14 +110,14 @@ def attempt_login(loginform):
         flash("Email or password incorrect, try again or register")
         return
     pwd_match = models.User_pwd.query.filter_by(user_id=user.id).first()
-    hash = hashlib.sha512(loginform.pwd_hash.data + user.salt).hexdigest()
+    hash = make_hash(loginform.pwd_hash.data, user.salt)
     match = (pwd_match.pwd_hash == hash)
     if not match:
         flash("Email or password incorrect, try again or register")
         return
     else:
         user.salt = make_salt()
-        pwd_match.pwd_hash = make_hash(str(loginform.pwd_hash.data) + str(user.salt))
+        pwd_match.pwd_hash = make_hash(str(loginform.pwd_hash.data), str(user.salt))
         db.session.add(user)
         db.session.add(pwd_match)
         db.session.commit()
@@ -127,7 +135,7 @@ def attempt_register(regform):
                        salt=make_salt())
         db.session.add(user)
         db.session.commit()
-        hash = make_hash(str(regform.pwd_hash.data) + str(user.salt))
+        hash = make_hash(str(regform.pwd_hash.data), str(user.salt))
         pwd = models.User_pwd(user_id=user.id, #id available because commit made
                           pwd_hash=hash)
         db.session.add(pwd)
@@ -138,5 +146,5 @@ def attempt_register(regform):
 def make_salt():
     return ("%08d" % (random.randint(1, 99999999)))
 
-def make_hash(text):
-    return hashlib.sha512(text).hexdigest()
+def make_hash(text, salt):
+    return hashlib.sha512(text + salt).hexdigest()
