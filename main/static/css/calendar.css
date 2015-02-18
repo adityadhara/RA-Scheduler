@@ -1,0 +1,41 @@
+table {
+	margin: 0 auto;
+	border-spacing: 0 0;
+	border-left: 1px solid black;
+	border-top: 1px solid black;
+}
+
+td {
+	border-right: 1px solid black;
+	border-bottom: 1px solid black;
+	padding: 3px 15px 20px 3px;
+	text-align: right;
+	vertical-align: top;
+	width: 120px;
+	height: 100px;
+	cursor: pointer;
+}
+
+td span {
+	margin-right: -10px;
+}
+
+td.extra {
+	padding: 3px 10px;
+	text-align: left;
+	border: none;
+	font: bold 30px 'Arial Narrow', sans-serif;
+	line-height: 33px;
+	cursor: auto;
+}
+
+td.oddmonth {
+    background-color: rgba(0, 0, 0, 0.15);
+}
+td.evenmonth {
+	
+}
+
+td.notinrange {
+    opacity: 0.2;
+}
