@@ -22,7 +22,7 @@ def index():
 @app.route('/manage_schedules')
 def manage_schedules():
     mock_list = mocks.mock_schedule_list
-    return render_template("manage_schedules.html", title="Manage",
+    return render_template("manage_schedules.html", title="Manage Schedules",
                            schedules=mock_list)
 
 @login.login_required
@@ -30,20 +30,20 @@ def manage_schedules():
 def view_schedules():
     print current_user
     mock_list = mocks.mock_schedule_list
-    return render_template("view_schedules.html", title="View",
+    return render_template("view_schedules.html", title="View Schedules",
                            schedules=mock_list)
 
 @login.login_required
 @app.route('/create_schedule')
 def create_schedule():
     #TODO: Currently this is just the UI -- change later. 
-    return render_template("create_schedule.html", title="View")
+    return render_template("create_schedule.html", title="Create New Schedule")
 
 @login.login_required
 @app.route('/update_preferences')
 def update_preferences():
     #TODO: Currently this is just the UI -- change later. 
-    return render_template("update_preferences.html", title="View")
+    return render_template("update_preferences.html", title="Update Preferences")
 
 @login.login_required
 @app.route('/profile', methods=['GET', 'POST'])
