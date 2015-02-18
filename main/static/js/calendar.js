@@ -1,3 +1,8 @@
+/*
+  Design inspired by http://madebyevan.com/calendar/app/
+  (c) 2015 George Brova
+*/
+
 window.onload = function()
 {
     calendarTableElement = document.getElementById('calendar');
