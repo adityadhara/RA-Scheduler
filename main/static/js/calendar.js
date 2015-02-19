@@ -12,6 +12,9 @@ function renderCalendar(startDate, endDate) {
     // Reset any previously rendered calendar
     calendarTableElement.innerHTML = "";
 
+    // Write the column for the days of the week
+    generateWeekdayLabels();
+    
     // Initialize to the beginning of the week if necessary
     currentDay = new Date(startDate.getTime());
     currentDay.setDate(currentDay.getDate() - currentDay.getDay());
@@ -29,6 +32,16 @@ function renderCalendar(startDate, endDate) {
 	    
 	} while(currentDay.getDay() != 0)
     
+    }
+}
+
+function generateWeekdayLabels() {
+    weekdayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    var weekHeader = calendarTableElement.insertRow(); 
+    for (i = 0; i < weekdayNames.length; i++) {
+	var weekday = weekHeader.insertCell();
+	weekday.className += " weekdays";
+	weekday.innerHTML = "<span>" + weekdayNames[i] + "</span>";
     }
 }
 

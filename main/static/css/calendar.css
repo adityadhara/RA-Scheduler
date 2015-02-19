@@ -16,6 +16,12 @@ td {
 	cursor: pointer;
 }
 
+td.weekdays {
+    height: 25px;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
 td span {
 	margin-right: -10px;
 }
