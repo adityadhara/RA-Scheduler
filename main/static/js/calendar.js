@@ -3,13 +3,16 @@
   (c) 2015 George Brova
 */
 
-window.onload = function()
-{
-    calendarTableElement = document.getElementById('calendar');
-}
+// Store global properties about this calendar
+var calendarProperties = {};
 
 function renderCalendar(startDate, endDate) {
+    // Save the start and end dates
+    calendarProperties.startDate = startDate;
+    calendarProperties.endDate   = endDate;
+
     // Reset any previously rendered calendar
+    var calendarTableElement = calendarProperties.calendarTableElement;
     calendarTableElement.innerHTML = "";
 
     // Write the column for the days of the week
@@ -36,6 +39,7 @@ function renderCalendar(startDate, endDate) {
 }
 
 function generateWeekdayLabels() {
+    var calendarTableElement = calendarProperties.calendarTableElement;
     weekdayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     var weekHeader = calendarTableElement.insertRow(); 
     for (i = 0; i < weekdayNames.length; i++) {
@@ -51,7 +55,7 @@ monthNames =  [ "January", "February", "March", "April", "May", "June",
 
 function generateDay(day, date) {
     var isShaded = (date.getMonth() % 2);
-    var isInRange = (date >= startDate && date <= endDate);
+    var isInRange = (date >= calendarProperties.startDate && date <= calendarProperties.endDate);
     
     if(isShaded) day.className += " oddmonth";
     else day.className += " evenmonth";

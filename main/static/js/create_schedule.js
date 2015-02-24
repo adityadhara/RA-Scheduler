@@ -1,5 +1,9 @@
 // When the document is ready
 $(document).ready(function () {
+
+    // Set the calendar object
+    calendarProperties.calendarTableElement = document.getElementById('calendar');
+
     
     // Make a default shift 
     $.fn.editable.defaults.mode = 'inline';
