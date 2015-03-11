@@ -60,11 +60,17 @@ function generateDay(day, date) {
     if(isShaded) day.className += " oddmonth";
     else day.className += " evenmonth";
     if(!isInRange) day.className += " notinrange";
-
+    
     // Write the date
     dateText = date.getDate();
     if (date.getDate() == 1) {
 	dateText = monthNames[date.getMonth()] + " " + dateText;
     }
     day.innerHTML = "<span>" + dateText + "</span>";
+
+    // Do any date-specific processing
+    if (typeof(calendarProperties.fillCellFn) == "function") {
+	calendarProperties.fillCellFn(day, date);
+    }
+
 }
