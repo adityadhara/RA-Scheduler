@@ -2,7 +2,7 @@
 
 <head>
 	{% if title %}
-	<title>{{ title }} - Project Scheduler</title>
+	<title>Project Scheduler | {{ title }}</title>
 	{% else %}
 	<title>Project Scheduler</title>
 	{% endif %}
@@ -11,20 +11,20 @@
 	<link href="/static/css/scheduler-template.css" rel="stylesheet">
 	{% block css_imports %}{% endblock %}
 	<script src="http://code.jquery.com/jquery-latest.js"></script>
-	<script src="/static/js/bootstrap.min.js"></script>
+	<script src="/static/js/shared/bootstrap.min.js"></script>
 	{% block js_imports %}{% endblock %}
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
 {% set def_navigation_bar = [
   ('/index', 'index', 'Home'),
-  ('/view_schedules', 'view_schedules', 'View my schedules'),
-  ('/manage_schedules', 'manage_schedules', 'Manage schedules')
 ] -%}
 {% set non_user_navigation_bar = [
   ('/login', 'login', 'Login')
 ] -%}
 {% set user_navigation_bar = [
+  ('/dashboard/#/view_schedules', 'view_schedules', 'My schedules'),
+  ('/dashboard/#/manage_teams', 'manage_teams', 'Manage My Teams')
   ('/profile', 'profile', 'Profile'),
   ('/logout', 'logout', 'Logout')
 ] -%}
@@ -48,7 +48,7 @@
         <ul class="nav navbar-nav">
 	  {% for href, id, caption in def_navigation_bar %}
 	  	<li{% if id == active_page %} class="active"{% endif %}>
-	      <a href="{% if id == active_page %}#{% else %}{{ href|e }}{%endif%}">{{ caption|e }}</a>
+	      <a href="{{ href|e }}">{{ caption|e }}</a>
 	  	</li>
 	  {% endfor %}
 	  {% if g.user.is_authenticated() %}

@@ -1,4 +1,5 @@
 from main import db
+from flask.ext.login import UserMixin
 
 '''
 for the following model classes, indexing is added only for
@@ -40,41 +41,18 @@ class Team_User_map(db.Model):
     def __repr__(self):
         return "<Team-User map %r to %r>" % (self.user, self.team)
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(254), index=True, unique=True)  #email addresses cannot be longer than 254 characters
-    name = db.Column(db.String(100))
-    salt = db.Column(db.String(8), default="0")  #default 0 used to signify oid use
+    social_id = db.Column(db.String(64), unique=True, nullable=False)
+    nickname = db.Column(db.String(64), nullable=False)
+    email = db.Column(db.String(128), nullable=False)
 
     leader_of = db.relationship('Team', backref='leader_bk', lazy='dynamic')
     team_mappings = db.relationship('Team_User_map', backref='user_bk', lazy='dynamic')
     preferences = db.relationship('Preference', backref='user_bk', lazy='dynamic')
     shifts = db.relationship('Shift', secondary=shift_user_map,
                              backref=db.backref('users_bk', lazy='dynamic'))
-    
-    #login compatibility!
-    def is_authenticated(self):
-        return True
-    
-    def is_active(self):
-        return True
-    
-    def is_anonymous(self):
-        return False
-    
-    def get_id(self):
-        return str(self.id)
-    
-    def __repr__(self):
-        return "<User %r: %r>" % (self.name, self.email)
 
-class User_pwd(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, unique=True)
-    pwd_hash = db.Column(db.String(128))
-    
-    def __repr__(self):
-        return "<pwd for user: %r>" % (self.user_id)
 
 class Shift(db.Model):
     id = db.Column(db.Integer, primary_key=True)
