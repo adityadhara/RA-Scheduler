@@ -8,6 +8,6 @@ SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
 WTF_CSRF_ENABLED = True
 SECRET_KEY = 'who-knows'
 
-OPENID_PROVIDERS = [
-    {'name': 'Google', 'url': 'https://www.google.com/accounts/o8/id'},
-    {'name': 'Yahoo', 'url': 'https://me.yahoo.com'}]
+GOOGLE_CLIENT_ID = "17674921736-n0e6fsnjddenub421kg8nkkic6rkevri.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET = "Gbij_yGnEiiEQm_0LZE0zSzQ"
+GOOGLE_AUTHORIZED_URI = "/authorize"
