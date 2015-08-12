@@ -1,0 +1,96 @@
+<html>
+
+<head>
+    {% if title %}
+    <title>{{ title }} - Project Scheduler</title>
+    {% else %}
+    <title>Project Scheduler</title>
+    {% endif %}
+
+    <link href="/static/css/shared/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="/static/css/scheduler-template.css" rel="stylesheet">
+    {% block css_imports %}{% endblock %}
+    <script src="/static/js/shared/jquery-2.1.3.min.js"></script>
+    <script src="/static/js/shared/bootstrap.min.js"></script>
+    {% block js_imports %}{% endblock %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+{% set def_navigation_bar = [
+    ('/index', 'index', 'Home')
+] -%}
+{% set non_user_navigation_bar = [
+    ('/login', 'login', 'Login')
+] -%}
+{% set user_navigation_bar = [
+    ('/dashboard#/view_schedules', 'view_schedules', 'View my schedules'),
+    ('/dashboard#/manage_schedules', 'manage_schedules', 'Manage schedules'),
+    ('/dashboard#/profile', 'profile', 'Profile'),
+    ('/logout', 'logout', 'Logout')
+] -%}
+
+{% set active_page = active_page|default('index') -%}
+
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/index">Project Scheduler</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                {% for href, id, caption in def_navigation_bar %}
+                <li {% if id == active_page %} class="active"{% endif %}>
+                    <a href="{% if id == active_page %}#{% else %}{{ href|e }}{%endif%}">{{ caption|e }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                {% if current_user.is_authenticated() %}
+                    {% set the_bar = user_navigation_bar %}
+                {% else %}
+                    {% set the_bar = non_user_navigation_bar %}
+                {% endif %}
+                {% for href, id, caption in the_bar %}
+                <li {% if id == active_page %} class="active"{% endif %}>
+                    <a href="{% if id == active_page %}#{% else %}{{ href|e }}{%endif%}">{{ caption|e }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+</nav>
+<div id="flashes">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="alert alert-danger" role="alert">
+        {% for message in messages %}
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+        {{ message }}
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+</div>
+
+<div class="container theme-showcase" role="main">
+    <div class="span12">
+        <div class="page-header">
+            <h1>About scheduler</h1>
+
+            <p class="lead">This is an awesome new project we're working on</p>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

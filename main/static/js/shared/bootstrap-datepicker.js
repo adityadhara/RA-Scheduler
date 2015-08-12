@@ -1343,7 +1343,7 @@
 	}
 
 	function opts_from_locale(lang){
-		// Derive options from locale plugins
+		// Derive options from locale dashboard
 		var out = {};
 		// Check if "de-DE" style date is available, if not language should
 		// fallback to 2 letter code eg "de"

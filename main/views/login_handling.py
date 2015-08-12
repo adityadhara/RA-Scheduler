@@ -1,10 +1,9 @@
 from main import app, google, lm, dbmng
 from flask import request, url_for, redirect, session, flash
-from flask.ext.login import login_user, logout_user
+from flask.ext.login import login_user, logout_user, login_required
 
 
 @app.route("/login")
-@lm.login_view
 def attempt_login():
     """
     This is the url that handles the Google login. Pretty straightforward - this redirects to the much too
@@ -47,7 +46,7 @@ def handle_login(resp):
     try:
         res = urlopen(req)
     except URLError, e:
-        if e.code == 401:
+        if hasattr(e, 'code') and e.code == 401:
             # Unauthorized - bad token
             return redirect(url_for('login'))
         flash(e)
@@ -56,9 +55,12 @@ def handle_login(resp):
     ### Stolen from https://github.com/mitsuhiko/flask-oauth/blob/master/example/google.py
 
     user_data = json.load(res)
+    del user_data['id']     # Remove the id attribute - this confuses everything
     user = dbmng.get_user_by_email(user_data['email'])
     if user is None:
-        user = dbmng.put_user(user_data)
+        user = dbmng.put_active_user(user_data)
+    if not user.is_activated:
+        user = dbmng.activate_user(user, user_data)
     login_user(user, remember=True)
 
     return redirect(success_url)
@@ -75,8 +77,12 @@ def user_loader(id):
 
 
 @app.route('/logout')
-@lm.login_required
-def logout_user():
+@login_required
+def logout_fn():
+    """
+    Once again - guess what this does
+    :return:
+    """
     logout_user()
     return redirect(url_for('index'))
 
