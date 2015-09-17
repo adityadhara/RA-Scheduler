@@ -38,8 +38,16 @@ app.config(function($stateProvider, $urlRouterProvider) {
             views: {
                 'subtitle@': { template: 'Create Team'},
                 'main@': {
-                    templateUrl: '/static/partials/routes/manage.create.html'
+                    templateUrl: '/static/partials/routes/manage.create.html',
+                    controller: 'TeamCreateController'
                 }
+            }
+        })
+        .state('manage.create.teamdata', {
+            url: '/teamdata',
+            parent: 'manage.create',
+            views: {
+                subsection: { templateUrl: '/static/partials/routes/manage.create.teamdata.html'}
             }
         })
         .state('manage.modify', {

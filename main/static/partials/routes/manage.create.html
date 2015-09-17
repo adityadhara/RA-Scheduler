@@ -1,37 +1,7 @@
 <form name="create_team">
-    <div class="col-xs-12 form-group">
-        <label class="col-md-6">Organization:</label>
-        <div class="col-md-6">
-            <input class="form-control" type="text" ng-model="team.org" />
-        </div>
-    </div>
-    <div class="col-xs-12 form-group">
-        <label class="col-md-6">Team Name:</label>
-        <div class="col-md-6">
-            <input class="form-control" type="text" ng-model="team.name" />
-        </div>
-    </div>
-    <div class="col-xs-12 form-group">
-        <label class="col-md-6">Team Description:</label>
-        <div class="col-md-6">
-            <input class="form-control" type="text" ng-model="team.desc" />
-        </div>
-    </div>
-    <div class="col-xs-12 form-group">
-        <label class="col-md-6">Team Description:</label>
-        <div class="col-md-6">
-            <input class="form-control" type="text" ng-model="team.desc" />
-        </div>
-    </div>
 
-    <div class="col-xs-12 form-group">
-        <label class="col-md-6">Start and End dates:</label>
-        <div class="col-md-3">
-            <input class="form-control" type="date" ng-model="calendar.from_date" />
-        </div>
-        <div class="col-md-3">
-            <input class="form-control" type="date" ng-model="calendar.to_date" />
-        </div>
-    </div>
+    <div ui-view="subsection"></div>
+
+    <button class="btn-primary" ng-click="proceedToNextStep()">Next</button>
 
 </form>

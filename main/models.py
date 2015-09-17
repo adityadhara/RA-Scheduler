@@ -26,7 +26,7 @@ class Team(db.Model):
     desc = db.Column(db.String(200))
 
     team_member_mapping = db.relationship('Team_User_map', backref='team_bk', lazy='dynamic')
-    shifts = db.relationship('Shift', backref='team_bk', lazy='dynamic')
+    calendars = db.relationship('Calendar', backref='team_bk', lazy='dynamic')
 
     def __repr__(self):
         return "<Team #%r: %r>" % (self.id, self.name)
@@ -36,7 +36,6 @@ class Team_User_map(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     team = db.Column(db.Integer, db.ForeignKey('team.id'))
     user = db.Column(db.Integer, db.ForeignKey('user.id'))
-    shift_type = db.Column(db.Integer, db.ForeignKey('shift_type.id'))
     offset = db.Column(db.Integer)
 
     def __repr__(self):
@@ -63,9 +62,19 @@ class User(db.Model, UserMixin):
         return "<User #%r, %r %r %r>" % (self.id, prefix, self.given_name, self.family_name)
 
 
+class Calendar(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    team_id = db.Column(db.Integer, db.ForeignKey('team.id'))
+    start_dt = db.Column(db.DateTime)
+    end_dt = db.Column(db.DateTime)
+
+    shift_types = db.relationship('Shift_type', backref='calendar_bk', lazy='dynamic')
+    shifts = db.relationship('Shift', backref='calendar_bk', lazy='dynamic')
+
+
 class Shift(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    team = db.Column(db.Integer, db.ForeignKey('team.id'))
+    calendar = db.Column(db.Integer, db.ForeignKey('calendar.id'))
     start_dt = db.Column(db.DateTime)
     end_dt = db.Column(db.DateTime)
     shift_type = db.Column(db.Integer, db.ForeignKey('shift_type.id'))
@@ -79,10 +88,10 @@ class Shift(db.Model):
 
 class Shift_type(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    calendar = db.Column(db.Integer, db.ForeignKey('calendar.id'))
     name = db.Column(db.String(32))
 
     shifts = db.relationship('Shift', backref='shift_type_bk', lazy='dynamic')
-    team_user_mappings = db.relationship('Team_User_map', backref='shift_type_bk', lazy='dynamic')
 
     def __repr__(self):
         return "<Shift type %r>" % (self.id)

@@ -14,16 +14,17 @@
     <script src="/static/js/shared/angular.min.js" defer></script>
     <script src="/static/js/shared/angular-ui-router.min.js" defer></script>
     <script src="/static/js/app.js" defer></script>
-    <script src="/static/js/services/FlashService.js" defer></script>
     <script src="/static/js/services/RESTApiService.js" defer></script>
     <script src="/static/js/services/CalendarService.js" defer></script>
-    <script src="/static/js/services/ShiftService.js" defer></script>
-    <script src="/static/js/services/PreferenceService.js" defer></script>
+    <script src="/static/js/services/TeamService.js" defer></script>
     <script src="/static/js/controllers/DashboardController.js" defer></script>
+    <script src="/static/js/controllers/ManagementControllers.js" defer></script>
 
 </head>
 
 <body ng-app="RAScheduler" ng-controller='DashboardController'>
+
+    <input type="hidden" id="hidden-user-email" value="{{ current_user.email }}" />
 
     <div id="wrapper">
 
@@ -128,9 +129,7 @@
                         {{current_user.given_name }} {{ current_user.family_name }} <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        <li>
-                            <a href="/profile"><i class="fa fa-fw fa-user"></i> Profile</a>
-                        </li>
+                        <li>{{ current_user.email }}</li>
                         <li>
                             <a href="/logout"><i class="fa fa-fw fa-power-off"></i> Log Out</a>
                         </li>
@@ -192,8 +191,8 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <!--flashes-->
-                        <div ng-repeat='flash in flashes' class="alert alert-info alert-dismissable">
-                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <div ng-repeat='flash in flashes' class="alert ang{ flash.class }ang alert-dismissable">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true" ng-click="flashes.dismiss($index)">&times;</button>
                             <i class="fa ang{ flash.icon }ang"></i> ang{ flash.message }ang
                         </div>
                     </div>
