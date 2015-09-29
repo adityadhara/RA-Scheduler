@@ -1,0 +1,38 @@
+<form name="create_calendar">
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="btn-group btn-group-justified">
+                <a class="btn btn-default"
+                   ng-repeat="state_sref in states"
+                   ng-class="($index>0)?(validateNextStep[states[states.indexOf(state_sref)-1]]()?'':'disabled'):''"
+                   ui-sref="ang{ state_sref }ang"
+                   ui-sref-active="active">
+                    ang{ state.get(state_sref).sub_subtitle }ang
+                    <span ng-if="validateNextStep[state.get(state_sref).name]()" class="glyphicon glyphicon-ok"></span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-12"><p> </p></div>
+
+    <div class="row" ui-view="subsection"></div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <button class="btn btn-primary"
+                    ng-if='state.current.name !== firstStep'
+                    ng-click="toPrevStep()">Prev</button>
+            <button class="btn btn-primary"
+                    ng-class="validateNextStep[state.current.name]()?'':'disabled'"
+                    ng-if='state.current.name !== lastStep'
+                    ng-click="toNextStep()">Next</button>
+            <button class="btn btn-primary"
+                    ng-class="validateEverything()?'':'disabled'"
+                    ng-if='state.current.name === lastStep'
+                    ng-click="completeCreate()">Complete</button>
+        </div>
+    </div>
+
+</form>

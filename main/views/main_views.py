@@ -3,6 +3,7 @@ from flask import render_template
 
 
 @app.route("/")
+@app.route("/index.html")
 def index():
     """
     Take a wild guess at what this webpage is.

@@ -4,7 +4,7 @@ from flask.ext.login import UserMixin
 '''
 for the following model classes, indexing is added only for
     obvious cases. Add indexing as required
-Using team_user_map as a model is a peculiar case: we might
+Using team_member_map as a model is a peculiar case: we might
     run into some weird errors and workarounds. Look at sqlalchemy's
     doc and see, they "strongly recommend" we don't use models for
     mapping many-to-many relationships
@@ -25,21 +25,24 @@ class Team(db.Model):
     org = db.Column(db.String(64))
     desc = db.Column(db.String(200))
 
-    team_member_mapping = db.relationship('Team_User_map', backref='team_bk', lazy='dynamic')
+    team_member_mapping = db.relationship('Team_Member_map', backref='team_bk', lazy='dynamic')
     calendars = db.relationship('Calendar', backref='team_bk', lazy='dynamic')
 
     def __repr__(self):
         return "<Team #%r: %r>" % (self.id, self.name)
 
 
-class Team_User_map(db.Model):
+class Team_Member_map(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    team = db.Column(db.Integer, db.ForeignKey('team.id'))
-    user = db.Column(db.Integer, db.ForeignKey('user.id'))
+    team_id = db.Column(db.Integer, db.ForeignKey('team.id'))
+    member_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     offset = db.Column(db.Integer)
 
+    team = db.relationship('Team', backref='mapping_bk')
+    member = db.relationship('User', backref='mapping_bk')
+
     def __repr__(self):
-        return "<Team-User map %r to %r>" % (self.user, self.team)
+        return "<Team-Member map %r to %r>" % (self.member, self.team)
 
 
 class User(db.Model, UserMixin):
@@ -52,18 +55,20 @@ class User(db.Model, UserMixin):
     is_activated = db.Column(db.Boolean, default=False)
 
     leader_of = db.relationship('Team', backref='leader_bk', lazy='dynamic')
-    team_mappings = db.relationship('Team_User_map', backref='user_bk', lazy='dynamic')
+    team_mappings = db.relationship('Team_Member_map', backref='user_bk', lazy='dynamic')
     preferences = db.relationship('Preference', backref='user_bk', lazy='dynamic')
     shifts = db.relationship('Shift', secondary=shift_user_map,
-                             backref=db.backref('users_bk', lazy='dynamic'))
+                             backref=db.backref('user_bk', lazy='dynamic'))
 
     def __repr__(self):
         prefix = "Mr." if self.gender == 'male' else "Ms."
-        return "<User #%r, %r %r %r>" % (self.id, prefix, self.given_name, self.family_name)
+        return "<User #%r, %r %r %r, %r>" % (self.id, prefix, self.given_name, self.family_name, self.email)
 
 
 class Calendar(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(256))
+    desc = db.Column(db.String(256))
     team_id = db.Column(db.Integer, db.ForeignKey('team.id'))
     start_dt = db.Column(db.DateTime)
     end_dt = db.Column(db.DateTime)
@@ -79,8 +84,8 @@ class Shift(db.Model):
     end_dt = db.Column(db.DateTime)
     shift_type = db.Column(db.Integer, db.ForeignKey('shift_type.id'))
 
-    users = db.relationship('User', secondary=shift_user_map,
-                             backref=db.backref('shifts_bk', lazy='dynamic'))
+    members_on_shift = db.relationship('User', secondary=shift_user_map,
+                                       backref=db.backref('shifts_bk', lazy='dynamic'))
 
     def __repr__(self):
         return "<Shift from %r to %r>" % (self.start_dt, self.end_dt)
@@ -100,7 +105,7 @@ class Shift_type(db.Model):
 class Preference(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     preference = db.Column(db.String(256))
-    user = db.Column(db.Integer, db.ForeignKey('user.id'))
+    member = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __repr__(self):
-        return "<Preference %r by user %r>" % (self.preference, self.user)
+        return "<Preference %r by member %r>" % (self.preference, self.member)

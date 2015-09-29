@@ -1,11 +1,44 @@
-<ul>Items to be listed here:
-    <li>
-        owned teams
-        <ul>
-            <li>Locked?</li>
-            <li>Pending acceptance</li>
-            <li>Pending preferences</li>
-            <li>Button to generate shift assignment</li>
-        </ul>
-    </li>
-</ul>
+<div class="col-md-12">
+    <h5>Your teams:</h5>
+    <button class="btn btn-primary" ui-sref="manage.createteam">Create new Team</button>
+    <p class="alert-warning">ang{ teams }ang</p>
+    <table class="table table-hover">
+        <tbody ng-repeat="(id, team) in teams" ng-hide="id==0">
+        <tr>
+            <th colspan="2" width="20%">ang{ team.name }ang</th>
+            <td width="10%">ang{ team.org }ang</td>
+            <td width="20%">ang{ team.desc }ang</td>
+            <td width="20%">ang{ team.members.length }ang members</td>
+            <td width="30%">
+                <div ng-if="team.leader == hidden_user_email" class="btn-group btn-group-justified">
+                    <a class="btn btn-warning"
+                       onmouseover="this.innerHTML = 'Coming Soon!';"
+                       onmouseout="this.innerHTML = 'Edit';">Edit
+                    </a>
+                    <a class="btn btn-danger" ng-click="deleteTeam(id)">delete</a>
+                </div>
+            </td>
+        </tr>
+        <tr ng-repeat="cal_id in teams.calendars">
+            <td></td>
+        </tr>
+        <tr>
+            <td colspan="7">
+                <a class="btn text-info" ng-click="createCalendar(id)"><span class="glyphicon glyphicon-plus"></span> Add new Calendar</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <ul>Items to be listed here:
+        <li>
+            owned teams
+            <ul>
+                <li>Locked?</li>
+                <li>Pending acceptance</li>
+                <li>Pending preferences</li>
+                <li>Button to generate shift assignment</li>
+            </ul>
+        </li>
+    </ul>
+</div>

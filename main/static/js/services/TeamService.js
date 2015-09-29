@@ -1,17 +1,23 @@
-app.factory('TeamService', ['RESTApi', 'CalendarService', function(RESTApi, CalendarService) {
+app.factory('TeamService', ['RESTApi', function(RESTApi) {
 
-    var verbose = true;
-    var log = function(func, msg, data) {
-        if (verbose) console.log("TeamService - " + func + ":", msg, data?data:'');
-    };
+    var log = Logger('TeamService', true);
 
     var teams = {};
     var leader = "";
     var current_team = 0;   // 0 signifies a team without an id. All other teams are referred to by id
 
-    var setLeader = function(email) {
-        if (validateUser(email)) {
+    var getCurrentTeamIndex = function() {
+        return current_team;
+    };
+
+    var setLeader = function(email, success_callback, failure_callback) {
+        log("setLeader", "called with", email);
+        if (validateMember(email)) {
             leader = email;
+            getAllTeams(success_callback, function() {
+                console.log("setLeader failed");
+                if (typeof failure_callback === 'function') failure_callback();
+            });
         } else {
             throw new Error('Cannot set leader to invalid email: ' + email);
         }
@@ -24,7 +30,7 @@ app.factory('TeamService', ['RESTApi', 'CalendarService', function(RESTApi, Cale
             name: "",
             org: "",
             desc: "",
-            users: [],      // Array of email addresses
+            members: [],      // Array of email addresses
             calendars: []   // Array of Calendar IDs. The actual calendars are stored in CalendarService
         }
     };
@@ -53,6 +59,9 @@ app.factory('TeamService', ['RESTApi', 'CalendarService', function(RESTApi, Cale
         log('resetTeams', 'resetTeams called');
         teams = {};
         createNewTeam();
+        getAllTeams(null, function() {
+            console.log("unable to fetch all teams while resetting teams");
+        });
     };
 
     var updateTeamVars = function(data) {
@@ -65,10 +74,11 @@ app.factory('TeamService', ['RESTApi', 'CalendarService', function(RESTApi, Cale
     };
 
     /* Validations */
-    var validateUser = function(user) {
-        log('validateUser', 'called with', user);
+    var validateMember = function(user) {
         //Checks if user is an email address
-        return /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i.test(user);
+        var isEmail = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i.test(user);
+        log('validateMember', 'called on ' + user, isEmail);
+        return !!isEmail;
     };
 
     var teamValidations = {
@@ -89,19 +99,10 @@ app.factory('TeamService', ['RESTApi', 'CalendarService', function(RESTApi, Cale
         }
     };
 
-    var validateAllUsers =function() {
-        var valid = true;
-        teams[current_team].users.forEach(function (user, index, arr) {
-            valid = valid && validateUser(user);
-        });
-        return valid;
-    };
-
-
-    var validateAllCalendars = function() {
-        var valid = true;
-        teams[current_team].calendars.forEach(function (calendar, index, arr) {
-            valid = valid && CalendarService.validate(calendar);
+    var validateAllMembers =function() {
+        var valid = (teams[current_team].members.length > 0);
+        teams[current_team].members.forEach(function (user, index, arr) {
+            valid = valid && validateMember(user);
         });
         return valid;
     };
@@ -110,23 +111,75 @@ app.factory('TeamService', ['RESTApi', 'CalendarService', function(RESTApi, Cale
         log('validateCurrentTeam', 'called on ' + current_team, teams[current_team]);
         var valid = true;
         for (var key in teamValidations) {
-            valid = valid && teamValidations[key](current_team);
+            valid = valid && teamValidations[key]();
+            if (!valid) break;
         }
         log('validateCurrentTeam', valid);
         return valid;
     };
 
-    /* REST requests */
-    var commitChanges = function() {
-        if (current_team == 0) {
-            console.log("Put request called");
-        } else {
-            console.log("Post request called");
-        }
+    var totalValidation = function() {
+        var valid = validateCurrentTeam();
+        if (valid) valid = valid && validateAllMembers();
+        return valid;
     };
 
-    var getAllTeams = function() {
-        console.log("Get request called");
+    /* REST requests */
+    var commitChanges = function(success_callback, failure_callback) {
+
+        var req;
+        if (current_team == 0) {
+            req = 'put';
+            console.log("Put request called");
+        } else {
+            req = 'post';
+            console.log("Post request called");
+        }
+
+        RESTApi.request('team', req, teams[0]).success(function(data) {
+            log('commitChanges', 'Request Succeeded', data);
+
+            log('commitChanges', 'data being placed on new empty team object at data.id', data.id);
+            teams[data.id] = newEmptyTeam();
+            current_team = data.id;
+            updateTeamVars(data);
+
+            createNewTeam();
+
+            if (typeof success_callback === 'function') success_callback(data);
+        }).error(function(e) {
+
+            console.log("Server returned:");
+            console.log(e);
+
+            if (typeof failure_callback === 'function') failure_callback();
+        });
+    };
+
+    var deleteTeamAtIndex = function(id) {
+        log('deleteTeamAtIndex', 'called for', id);
+    };
+
+    var getAllTeams = function(success_callback, failure_callback) {
+        if (leader === "") {
+            log("getAllTeams", "leader not defined, getAllTeams aborted");
+            return;
+        }
+
+        RESTApi.request('team', 'get').success(function(data) {
+            // update teams variable
+            data.teams.forEach(function(team, index, arr) {
+                teams[team.id] = team;
+            });
+            log('getAllTeams', 'success! teams updated to', teams);
+            // callback
+            if (typeof success_callback === 'function') success_callback(data);
+        }).error(function(e) {
+            console.log('Server returned:');
+            console.log(e);
+            // callback
+            if (typeof failure_callback === 'function') failure_callback();
+        });
     };
 
     //initialize
@@ -134,6 +187,8 @@ app.factory('TeamService', ['RESTApi', 'CalendarService', function(RESTApi, Cale
 
     return {
         // basics
+        teams: teams,
+        getCurrentTeamIndex: getCurrentTeamIndex,
         createTeam: createNewTeam,
         getCurrentTeam: getCurrentTeam,
         setCurrentTeam: setCurrentTeam,
@@ -144,12 +199,13 @@ app.factory('TeamService', ['RESTApi', 'CalendarService', function(RESTApi, Cale
         // validations
         validations: teamValidations,
         validateCurrentTeam: validateCurrentTeam,
-        validateUser: validateUser,
-        vaidateAllUsers: validateAllUsers,
-        validateAllCalendars: validateAllCalendars,
+        validateMember: validateMember,
+        validateAllMembers: validateAllMembers,
+        validateEverything: totalValidation,
 
         // RESTApi
         commitCurrentTeam: commitChanges,
+        deleteTeam: deleteTeamAtIndex,
         getTeams: getAllTeams
     };
 
