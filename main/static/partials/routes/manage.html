@@ -1,7 +1,6 @@
 <div class="col-md-12">
-    <h5>Your teams:</h5>
     <button class="btn btn-primary" ui-sref="manage.createteam">Create new Team</button>
-    <p class="alert-warning">ang{ teams }ang</p>
+    <p class="alert-warning">ang{ calendars }ang</p>
     <table class="table table-hover">
         <tbody ng-repeat="(id, team) in teams" ng-hide="id==0">
         <tr>
@@ -13,7 +12,8 @@
                 <div ng-if="team.leader == hidden_user_email" class="btn-group btn-group-justified">
                     <a class="btn btn-warning"
                        onmouseover="this.innerHTML = 'Coming Soon!';"
-                       onmouseout="this.innerHTML = 'Edit';">Edit
+                       onmouseout="this.innerHTML = 'Edit';">
+                        Edit
                     </a>
                     <a class="btn btn-danger" ng-click="deleteTeam(id)">delete</a>
                 </div>

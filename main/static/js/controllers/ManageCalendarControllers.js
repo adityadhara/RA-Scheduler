@@ -103,6 +103,9 @@ app.controller('CalendarShiftTypesController', ['$scope', '$state', 'CalendarSer
     function($scope, $state, CalendarService) {
         var log = Logger('CalendarShiftTypesController', true);
 
+        $scope.shift_types = CalendarService.getCurrentCalendar().shift_types;
+        $scope.addShiftType = CalendarService.addShiftType;
+        $scope.removeShiftType = CalendarService.removeShiftTypeAt;
 
         log ('nil', 'Controller initialized');
 

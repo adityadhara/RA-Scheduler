@@ -57,7 +57,13 @@ app.factory('TeamService', ['RESTApi', function(RESTApi) {
 
     var resetTeams = function() {
         log('resetTeams', 'resetTeams called');
-        teams = {};
+
+        // its important to preserve the teams object so that
+        // TeamService.teams points to same thing at all times
+        for (var key in teams) {
+            delete teams[key];
+        }
+
         createNewTeam();
         getAllTeams(null, function() {
             console.log("unable to fetch all teams while resetting teams");

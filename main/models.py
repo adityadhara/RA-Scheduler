@@ -94,6 +94,7 @@ class Shift(db.Model):
 class Shift_type(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     calendar = db.Column(db.Integer, db.ForeignKey('calendar.id'))
+    color = db.Column(db.String(6))
     name = db.Column(db.String(32))
 
     shifts = db.relationship('Shift', backref='shift_type_bk', lazy='dynamic')

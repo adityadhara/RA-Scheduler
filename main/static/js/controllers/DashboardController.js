@@ -78,6 +78,7 @@ app.controller('ManageController', ['$rootScope', '$scope', '$state', 'TeamServi
             }
         };
 
+        $scope.calendars = CalendarService.calendars;
         $scope.createCalendar = function(id) {
             TeamService.setCurrentTeam(id);
             $state.go('manage.createcalendar');

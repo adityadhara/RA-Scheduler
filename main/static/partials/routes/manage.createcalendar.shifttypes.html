@@ -1,0 +1,21 @@
+        <div class="col-md-12">
+            <h5>Enter your shift types:</h5>
+            <div class="form-group"
+                 ng-repeat="shift_type in shift_types">
+                <label class="col-xs-2">
+                    <span class="glyphicon glyphicon-tint" ng-style="{color:shift_type.color}"></span>
+                </label>
+                <div class="col-xs-8">
+                    <input class="form-control shift_type"
+                           ng-model="shift_type.name" />
+                </div>
+                <div class="col-xs-2">
+                    <button class="btn btn-danger"
+                            ng-click="removeShiftTypeAt($index)"
+                            ng-if="shift_types.length > 1">&times;</button>
+                    <button class="btn btn-primary"
+                            ng-click="addShiftType()"
+                            ng-if="$last"> + </button>
+                </div>
+            </div>
+        </div>

@@ -12,6 +12,8 @@ app.factory('CalendarService', ['RESTApi', 'TeamService', function(RESTApi, Team
             start_dt: new Date(),
             end_dt: new Date(),
             team_id: "0",
+            all_preferences_entered: false,
+            locked: false,
             shifts: [],
             shift_types: []
         }
@@ -19,9 +21,17 @@ app.factory('CalendarService', ['RESTApi', 'TeamService', function(RESTApi, Team
 
     var newEmptyShift = function() {
         return {
-            start_dt: 0,
-            end_dt: 0,
-            shift_type: ""
+            start_dt: new Date(),
+            end_dt: new Date(),
+            shift_type: null
+        };
+    };
+
+    var newEmptyShiftType = function() {
+        return {
+            id: 0,
+            color: '#ffffff',
+            name: ''
         };
     };
 
@@ -44,11 +54,46 @@ app.factory('CalendarService', ['RESTApi', 'TeamService', function(RESTApi, Team
         calendars[0].team_id = TeamService.getCurrentTeamIndex().toString();
         current_calendar = 0;
         log('createNewCalendar', 'new calendar created at index 0 for team', calendars[0].team_id);
+
+        addShift({});
+        addShiftType({});
+    };
+
+    var addShift = function(data) {
+        var new_shift = newEmptyShift();
+        for (var key in data) {
+            new_shift[key] = data[key];
+        }
+        calendars[current_calendar].shifts.push(new_shift);
+        log('addShift', 'new shift created with', data);
+    };
+
+    var removeShiftAt = function(index) {
+        calendars[current_calendar].shifts.splice(index, 1);
+    };
+
+    var addShiftType = function(data) {
+        var new_shift_type = newEmptyShiftType();
+        for (var key in data) {
+            new_shift_type[key] = data[key];
+        }
+        calendars[current_calendar].shift_types.push(new_shift_type);
+        log('addShiftType', 'new shift_type created with', data);
+    };
+
+    var removeShiftTypeAt = function(index) {
+        calendars[current_calendar].shift_types.splice(index, 1);
     };
 
     var resetCalendars = function() {
         log('resetCalendars', 'resetCalendars called');
-        calendars = {};
+
+        // its important to preserve the calendars object so that
+        // CalendarService.calendars points to same thing at all times
+        for (var key in calendars) {
+            delete calendars[key];
+        }
+
         createNewCalendar();
     };
 
@@ -119,8 +164,9 @@ app.factory('CalendarService', ['RESTApi', 'TeamService', function(RESTApi, Team
     };
 
     var validateShiftType = function(shift_type) {
-        var truth = (shift_type.length > 0) &&
-            (/^[a-zA-Z]/.test(shift_type));
+        var truth = (shift_type.name.length > 0) &&
+            (/^[a-zA-Z]/.test(shift_type.name)) &&
+            (parseInt(shift_type.color, 16) < parseInt("ffffff", 16));
         log('validateShiftType', 'called on ' + shift_type, truth);
         return truth;
     };
@@ -128,7 +174,7 @@ app.factory('CalendarService', ['RESTApi', 'TeamService', function(RESTApi, Team
     var validateShift = function(shift) {
         var truth = (shift.start_dt > calendars[current_calendar].start_dt) &&
             (shift.end_dt < calendars[current_calendar].end_dt) &&
-            (calendars[current_calendar].indexOf(shift.shift_type) > -1);
+            (calendars[current_calendar].shift_types.indexOf(shift.shift_type) > -1);
         log ('validateShift', 'called on ' + shift, truth);
         return truth;
     };
@@ -165,8 +211,10 @@ app.factory('CalendarService', ['RESTApi', 'TeamService', function(RESTApi, Team
         reset: resetCalendars,
 
         // shift management
-
-
+        addShift: addShift,
+        removeShiftAt: removeShiftAt,
+        addShiftType: addShiftType,
+        removeShiftTypeAt: removeShiftTypeAt,
 
         // validations
         validations: calendarValidations,
