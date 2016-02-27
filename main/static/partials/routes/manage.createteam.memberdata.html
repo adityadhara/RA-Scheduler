@@ -1,0 +1,29 @@
+<div class="col-xs-12">
+    <div class="col-md-6 form-group">
+        <label>Enter your team members' emails:</label>
+        <div>
+            <textarea rows="ang{ emailsTextAreaHeight() }ang"
+                      class="form-control"
+                      ng-model="emailstring"
+                      ng-change="onEmailStringChange()"></textarea>
+        </div>
+    </div>
+    <div class="col-md-6 form-group">
+        <label>Verify your emails here:</label>
+        <button class="btn btn-danger btn-xs"
+                ng-if="(!allEmailsValid)||(hasDuplicates)"
+                ng-click="removeAllInvalid()">remove all invalid emails</button>
+        <button ng-repeat="email in emails track by $index"
+                class="btn btn-default btn-block"
+                style="text-align: left"
+                ng-class="emailvalidity[email]?(emailduplicity[email]?'btn-warning':'btn-default'):'btn-danger'"
+                ng-click="removeEmailFromList($index)"
+                ng-mouseover="show_x[email]=true"
+                ng-mouseout="show_x[email]=false">
+            ang{ email }ang
+            <span class="badge" ng-if="!emailvalidity[email]">Invalid</span>
+            <span class="badge" ng-if="emailduplicity[email]">duplicate</span>
+            <span class="glyphicon glyphicon-remove" ng-show="show_x[email]"></span>
+        </button>
+    </div>
+</div>

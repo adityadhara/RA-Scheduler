@@ -1,0 +1,18 @@
+<div class="col-md-12">
+    <table class="table table-striped table-bordered">
+        <tr ng-repeat="val in [['org', 'Organization'], ['name', 'Name'], ['desc', 'Description']]">
+            <th>ang{ val[1] }ang</th>
+            <td>ang{ team[val[0]] }ang</td>
+        </tr>
+        <tr>
+            <th>Members</th>
+            <td>
+                <ol>
+                    <li ng-repeat="email in team.members">
+                        ang{ email }ang
+                    </li>
+                </ol>
+            </td>
+        </tr>
+    </table>
+</div>

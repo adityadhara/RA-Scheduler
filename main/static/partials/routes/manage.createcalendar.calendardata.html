@@ -1,0 +1,33 @@
+        <div class="col-xs-12 form-group">
+            <label class="col-md-6">Team:</label>
+            <div class="col-md-6">
+                <select class="form-control"
+                        ng-model="calendar.team_id"
+                        ng-options="id as team.name for (id, team) in teams">
+                </select>
+            </div>
+        </div>
+        <div class="col-xs-12 form-group">
+            <label class="col-md-6">Name:</label>
+            <div class="col-md-6">
+                <input class="form-control" type="text" ng-model="calendar.name"/>
+            </div>
+        </div>
+        <div class="col-xs-12 form-group">
+            <label class="col-md-6">Description:</label>
+            <div class="col-md-6">
+                <input class="form-control" type="text" ng-model="calendar.desc"/>
+            </div>
+        </div>
+        <div class="col-xs-12 form-group">
+            <label class="col-md-6">Start Date:</label>
+            <div class="col-md-6">
+                <input class="form-control" type="date" ng-model="calendar.start_dt"/>
+            </div>
+        </div>
+        <div class="col-xs-12 form-group">
+            <label class="col-md-6">End Date:</label>
+            <div class="col-md-6">
+                <input class="form-control" type="date" ng-model="calendar.end_dt"/>
+            </div>
+        </div>

@@ -2,6 +2,10 @@ from main import app, google, lm, dbmng
 from flask import request, url_for, redirect, session, flash
 from flask.ext.login import login_user, logout_user, login_required
 
+# for google login magic down below
+from urllib2 import Request, urlopen, URLError
+import json
+
 
 @app.route("/login")
 def attempt_login():
@@ -37,9 +41,6 @@ def handle_login(resp):
     failure_url = session.pop('after_login_failure', url_for('index'))
 
     ### I'm not going to pretend like I know exactly what's happening here:
-    from urllib2 import Request, urlopen, URLError
-    import json
-
     headers = {'Authorization': 'OAuth '+access_token}
     req = Request('https://www.googleapis.com/oauth2/v1/userinfo',
                   None, headers)
@@ -55,7 +56,7 @@ def handle_login(resp):
     ### Stolen from https://github.com/mitsuhiko/flask-oauth/blob/master/example/google.py
 
     user_data = json.load(res)
-    del user_data['id']     # Remove the id attribute - this confuses everything
+    del user_data['id']     # Remove the id attribute - it's useless and confuses everything
     user = dbmng.get_user_by_email(user_data['email'])
     if user is None:
         user = dbmng.put_active_user(user_data)
