@@ -51,10 +51,10 @@ app.controller('CreateCalendarController', ['$rootScope', '$scope', '$state', 'C
 
         $scope.completeCreate = function () {
             TeamService.commitCurrentTeam(function(data) {
-                $scope.flashes.addFlash('Woo! Your team "' + data.name + '" is ready!', 'info');
+                $scope.flashes.addFlash('Woo! Your calendar "' + data.name + '" is ready!', 'info');
                 $state.go('manage');
             }, function() {
-                alert("Unable to commit the current team. Please check your Internet connection and try again!");
+                alert("Unable to commit the current calendar. Please check your Internet connection and try again!");
             });
             log('completeCreate', 'called');
         };
